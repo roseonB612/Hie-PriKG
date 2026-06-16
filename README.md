@@ -1,69 +1,92 @@
-# Hie-PriKG: Hierarchical Privacy-preserving Knowledge Graph Retrieval
+# Hie-PriKG: Hierarchical Privacy-Preserving Knowledge Graph Retrieval for Secure RAG Systems
 
-Hie-PriKG 是一个面向大规模知识图谱（Knowledge Graph, KG）的**分层隐私保护索引与检索框架**。该系统通过解耦检索流程，旨在解决高安全需求下的计算延迟瓶颈。
+This repository contains the reference implementation of **Hie-PriKG**, a hierarchical encrypted retrieval framework designed for privacy-preserving Knowledge Graph (KG) retrieval in Retrieval-Augmented Generation (RAG) systems.
 
-## 🔬 项目架构
+Hie-PriKG combines **Function-Hiding Inner Product Encryption (FH-IPE)** and **Asymmetric Scalar Product Preserving Encryption (ASPE)** to achieve secure semantic retrieval while maintaining practical scalability and low-latency execution.
 
-本仓库包含两个核心实现版本，完整展示了从理论验证到高性能工程实现的演进路径：
+---
 
-* **`/IPFE+ASPE` (Python 原型)**: 
-  基于 Python 的算法原型验证模块。利用 `IPFE`（内部乘积函数加密）实现聚类中心的粗筛，并结合 `ASPE`（非对称标量积保留加密）完成桶内实体的精准排序。该模块适合快速理解算法逻辑和进行数学链路闭环测试。
+## Overview
 
-* **`/FH-IPE-CPP` (C++ 高性能引擎)**: 
-  生产级高性能检索引擎。为了突破 Python 在底层双线性配对运算（Pairing-based Cryptography）上的性能瓶颈，我们使用 C++ 重构了核心算子。通过集成 `mcl` 和 `Eigen3` 库，实现了真正的 **FH-IPE（完全函数隐藏内部乘积加密）**，并支持硬件级并行加速。
+Large-scale KG-enhanced RAG systems commonly outsource dense embeddings to cloud servers, creating potential privacy risks for both user queries and proprietary knowledge bases.
 
-## 🚀 快速导航
+Hie-PriKG addresses this challenge through a two-stage retrieval architecture:
 
-| 模块 | 核心语言 | 主要用途 | 状态 |
-| :--- | :--- | :--- | :--- |
-| **Python 原型** | Python | 算法理论验证、数学链路校验 | 稳定 |
-| **C++ 引擎** | C++17 | 生产级检索、高性能 Benchmark | 稳定 |
+1. **FH-IPE-based cluster filtering**
 
-## 🛠️ 如何编译与运行
+   * Securely identifies candidate clusters.
+   * Provides two-sided hiding for both query vectors and cluster centroids.
 
-请根据您的需求进入相应目录，参考各文件夹下的详细说明：
+2. **ASPE-based entity ranking**
 
-1. **若要进行算法验证**：进入 `IPFE+ASPE/`，查看其 `README.md`，运行 `pytest` 测试核心数学逻辑。
-2. **若要运行高性能检索**：进入 `FH-IPE-CPP/`，利用提供的 `Dockerfile` 构建高性能执行环境，并参考其说明进行编译测试。
+   * Performs lightweight similarity evaluation inside candidate clusters.
+   * Preserves retrieval efficiency while reducing overall search complexity.
 
-## 📄 引用说明
-本项目相关论文正在发表中。如果您在研究中使用此代码，请按照以下规范引用：
+In addition, Hie-PriKG introduces an **Identity-Based Delegated Ciphertext Translation (IB-DCT)** mechanism that enables non-interactive multi-user retrieval without requiring continuous online participation from the KG owner.
 
-# Hie-PriKG: Hierarchical Privacy-preserving Knowledge Graph Retrieval
+---
 
-Hie-PriKG 是一个面向大规模知识图谱（Knowledge Graph, KG）的**分层隐私保护索引与检索框架**。该系统通过解耦检索流程，旨在解决高安全需求下的计算延迟瓶颈。
+## Repository Structure
 
-## 🔬 项目架构
+```text
+Hie-PriKG/
+├── IPFE+ASPE/       # Python prototype implementation
+├── FH-IPE-CPP/      # C++ implementation based on mcl and Eigen3
+├── datasets/        # Processed benchmark datasets
+├── figures/         # Experimental figures
+└── README.md
+```
 
-本仓库包含两个核心实现版本，完整展示了从理论验证到高性能工程实现的演进路径：
+### Python Prototype (`IPFE+ASPE`)
 
-* **`/IPFE+ASPE` (Python 原型)**: 
-  基于 Python 的算法原型验证模块。利用 `IPFE`（内部乘积函数加密）实现聚类中心的粗筛，并结合 `ASPE`（非对称标量积保留加密）完成桶内实体的精准排序。该模块适合快速理解算法逻辑和进行数学链路闭环测试。
+The Python implementation is intended for:
 
-* **`/FH-IPE-CPP` (C++ 高性能引擎)**: 
-  生产级高性能检索引擎。为了突破 Python 在底层双线性配对运算（Pairing-based Cryptography）上的性能瓶颈，我们使用 C++ 重构了核心算子。通过集成 `mcl` 和 `Eigen3` 库，实现了真正的 **FH-IPE（完全函数隐藏内部乘积加密）**，并支持硬件级并行加速。
+* Algorithm verification
+* Security validation
+* Mathematical correctness testing
+* Rapid prototyping
 
-## 🚀 快速导航
+Core components:
 
-| 模块 | 核心语言 | 主要用途 | 状态 |
-| :--- | :--- | :--- | :--- |
-| **Python 原型** | Python | 算法理论验证、数学链路校验 | 稳定 |
-| **C++ 引擎** | C++17 | 生产级检索、高性能 Benchmark | 稳定 |
+* Inner Product Functional Encryption (IPFE)
+* ASPE-based secure ranking
+* Hierarchical retrieval workflow
 
-## 🛠️ 如何编译与运行
+### C++ Implementation (`FH-IPE-CPP`)
 
-请根据您的需求进入相应目录，参考各文件夹下的详细说明：
+The C++ implementation provides:
 
-1. **若要进行算法验证**：进入 `IPFE+ASPE/`，查看其 `README.md`，运行 `pytest` 测试核心数学逻辑。
-2. **若要运行高性能检索**：进入 `FH-IPE-CPP/`，利用提供的 `Dockerfile` 构建高性能执行环境，并参考其说明进行编译测试。
+* FH-IPE construction based on bilinear pairings
+* Efficient retrieval over large-scale datasets
+* Multi-threaded execution
+* Experimental evaluation used in the paper
 
-## 📄 引用说明
-本项目相关论文正在发表中。如果您在研究中使用此代码，请按照以下规范引用：
+Dependencies:
+
+* mcl
+* Eigen3
+* OpenMP
+
+---
+
+## Building and Running
+
+Please refer to the README file inside each subdirectory:
+
+* `IPFE+ASPE/README.md`
+* `FH-IPE-CPP/README.md`
+
+---
+
+## Citation
+
+If you find this repository useful in your research, please cite:
 
 ```bibtex
-@misc{hieprikg2026,
-  title={Hie-PriKG: Hierarchical Privacy-preserving Knowledge Graph Indexing and Retrieval System},
-  author={[陕西师范大学-杨可颖], [陕西师范大学-王涛], [陕西师范大学-冉洁茹], et al.},
+@article{hieprikg2026,
+  title={Hie-PriKG: Hierarchical Privacy-Preserving Knowledge Graph Retrieval for Secure RAG Systems},
+  author={Yang, Keying and Wang, Tao and Ran, Jieru},
   year={2026},
-  publisher={GitHub}
+  note={Under Review}
 }
+```
