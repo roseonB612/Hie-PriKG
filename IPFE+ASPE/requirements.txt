@@ -1,0 +1,15 @@
+# Hie-PriKG 核心依赖库
+
+# 核心计算与数据处理
+numpy>=1.24.0
+pandas>=2.0.0
+
+# 机器学习与自然语言处理
+sentence-transformers>=2.2.2
+scikit-learn>=1.2.2
+
+# 网络请求与自动化测试
+requests>=2.31.0
+pytest>=7.4.0
+
+#pip install -r requirements.txt

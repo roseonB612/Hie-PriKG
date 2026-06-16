@@ -1,0 +1,19 @@
+# Python 缓存
+__pycache__/
+*.pyc
+
+# C++ 编译垃圾
+FH-IPE-CPP/build/
+FH-IPE-CPP/logs/
+*.out
+*.so
+*.o
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
+
+# 忽略所有数据文件
+*.bin
+*.npy
+*.pkl
